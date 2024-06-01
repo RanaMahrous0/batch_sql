@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class MyGirdViewItems extends StatelessWidget {
-  IconData icon;
-  String label;
-  Color color;
-  MyGirdViewItems(
+  final IconData icon;
+  final String label;
+  final Color color;
+  const MyGirdViewItems(
       {required this.icon,
       required this.color,
       required this.label,
