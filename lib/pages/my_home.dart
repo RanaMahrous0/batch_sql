@@ -1,4 +1,6 @@
 import 'package:batch_sql/helpers/sqlHelper.dart';
+import 'package:batch_sql/pages/catgories.dart';
+import 'package:batch_sql/pages/clients.dart';
 import 'package:batch_sql/widgets/my_gird_view_items.dart';
 import 'package:batch_sql/widgets/my_header_items_home.dart';
 import 'package:flutter/foundation.dart';
@@ -79,10 +81,10 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ],
                         ),
-                        MyHeaderItem(
+                        const MyHeaderItem(
                             label: 'Exchange rate',
                             value: '1 EUR = 11,712.25 UZS'),
-                        MyHeaderItem(
+                        const MyHeaderItem(
                             label: 'Today \'s sales', value: '110,000.00 UZS')
                       ],
                     ),
@@ -93,7 +95,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Expanded(
             child: Container(
-              color: Color(0xfffbfafb),
+              color: const Color(0xfffbfafb),
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: GridView.count(
@@ -102,25 +104,49 @@ class _HomePageState extends State<HomePage> {
                   crossAxisSpacing: 20,
                   children: [
                     MyGirdViewItems(
-                        icon: Icons.calculate,
-                        color: Colors.orange,
-                        label: 'All sales'),
+                      icon: Icons.calculate,
+                      color: Colors.orange,
+                      label: 'All sales',
+                      onTap: () {},
+                    ),
                     MyGirdViewItems(
-                        icon: Icons.inventory,
-                        color: Colors.pink,
-                        label: 'Products'),
+                      icon: Icons.inventory,
+                      color: Colors.pink,
+                      label: 'Products',
+                      onTap: () {},
+                    ),
                     MyGirdViewItems(
-                        icon: Icons.group,
-                        color: Colors.blue,
-                        label: 'Clients'),
+                      icon: Icons.group,
+                      color: Colors.blue,
+                      label: 'Clients',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyClientsPage(),
+                          ),
+                        );
+                      },
+                    ),
                     MyGirdViewItems(
-                        icon: Icons.point_of_sale,
-                        color: Colors.green,
-                        label: 'New sale'),
+                      icon: Icons.point_of_sale,
+                      color: Colors.green,
+                      label: 'New sale',
+                      onTap: () {},
+                    ),
                     MyGirdViewItems(
-                        icon: Icons.category,
-                        color: Colors.yellow,
-                        label: 'Categories'),
+                      icon: Icons.category,
+                      color: Colors.yellow,
+                      label: 'Categories',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyCatgoryPage(),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
