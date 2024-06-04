@@ -79,9 +79,8 @@ class _CategoryOpsPageState extends State<CategoryOpsPage> {
             backgroundColor: Colors.green,
             content: Text('Data Saved Successfully'),
           ),
-         
         );
-         Navigator.pop(context,true);
+        Navigator.pop(context, true);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

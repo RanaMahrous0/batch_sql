@@ -51,6 +51,7 @@ class _ClientOpsPageState extends State<ClientOpsPage> {
                   if (value!.isEmpty) {
                     emailController.text = 'Null';
                   }
+                  return null;
                 },
               ),
               const SizedBox(
@@ -63,6 +64,7 @@ class _ClientOpsPageState extends State<ClientOpsPage> {
                   if (value!.isEmpty) {
                     phoneController.text = 'Null';
                   }
+                  return null;
                 },
               ),
               const SizedBox(
@@ -75,6 +77,7 @@ class _ClientOpsPageState extends State<ClientOpsPage> {
                   if (value!.isEmpty) {
                     addressController.text = 'Null';
                   }
+                  return null;
                 },
               ),
               const SizedBox(

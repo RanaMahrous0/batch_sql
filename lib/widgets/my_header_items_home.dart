@@ -19,14 +19,14 @@ class MyHeaderItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                label!,
+                label,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 17,
                 ),
               ),
               Text(
-                value!,
+                value,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
