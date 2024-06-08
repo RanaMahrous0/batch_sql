@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 class MyPaginatedDataTable extends StatelessWidget {
   final DataTableSource source;
   final List<DataColumn> columns;
+  final double? minWidth;
   const MyPaginatedDataTable(
-      {required this.source, required this.columns, super.key});
+      {required this.source,
+      this.minWidth = 600,
+      required this.columns,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +26,7 @@ class MyPaginatedDataTable extends StatelessWidget {
         ),
         border: TableBorder.all(),
         columnSpacing: 20,
-        minWidth: 800,
+        minWidth: minWidth,
         horizontalMargin: 20,
         wrapInCard: false,
         rowsPerPage: 10,

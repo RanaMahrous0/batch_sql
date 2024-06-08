@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MyTextFormField extends StatelessWidget {
   final TextEditingController controller;
+  final List<TextInputFormatter>? inputFormatters;
   final String label;
   final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
+
   const MyTextFormField(
       {required this.controller,
       required this.label,
       required this.validator,
+      this.inputFormatters,
+      this.keyboardType,
       super.key});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       validator: validator,
       controller: controller,
       decoration: InputDecoration(

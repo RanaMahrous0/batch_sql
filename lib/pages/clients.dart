@@ -1,4 +1,5 @@
 import 'package:batch_sql/helpers/sqlHelper.dart';
+import 'package:batch_sql/models/category_data.dart';
 import 'package:batch_sql/models/clients_data.dart';
 import 'package:batch_sql/pages/client_ops.dart';
 import 'package:batch_sql/widgets/my_paginated_data_table.dart';
@@ -77,7 +78,23 @@ class _MyClientsPageState extends State<MyClientsPage> {
               height: 15,
             ),
             MyPaginatedDataTable(
-                source: MyDataTableSource(clients, getClients),
+                minWidth: 800,
+                source: ClientsDataSource(
+                    clientsEx: clients,
+                    onDelete: (clientData) {
+                      onDeleteRow(clientData.id!);
+                    },
+                    onUpdate: (categoryData) async {
+                      var result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ClientOpsPage(
+                                    clientsData: categoryData,
+                                  )));
+                      if (result ?? false) {
+                        getClients();
+                      }
+                    }),
                 columns: const [
                   DataColumn(
                     label: Text('ID'),
@@ -105,13 +122,59 @@ class _MyClientsPageState extends State<MyClientsPage> {
       ),
     );
   }
+
+  Future<void> onDeleteRow(int id) async {
+    try {
+      var dialogResult = await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Delete Client'),
+              content:
+                  const Text('Are you sure you want to delete this client?'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                  child: const Text('Delete'),
+                ),
+              ],
+            );
+          });
+      if (dialogResult ?? false) {
+        var sqlHelper = GetIt.I.get<SqlHelper>();
+        var result = await sqlHelper.db!.delete(
+          'clients',
+          where: 'id =?',
+          whereArgs: [id],
+        );
+        if (result > 0) {
+          getClients();
+        }
+      }
+    } catch (e) {
+      print('Error In Deleting Item');
+    }
+  }
 }
-class MyDataTableSource extends DataTableSource {
+
+class ClientsDataSource extends DataTableSource {
   List<ClientsData>? clientsEx;
 
-  void Function() getClients;
+  void Function(ClientsData) onDelete;
+  void Function(ClientsData) onUpdate;
 
-  MyDataTableSource(this.clientsEx, this.getClients);
+  ClientsDataSource(
+      {required this.clientsEx,
+      required this.onDelete,
+      required this.onUpdate});
 
   @override
   DataRow? getRow(int index) {
@@ -125,14 +188,22 @@ class MyDataTableSource extends DataTableSource {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.edit),
+            onPressed: () {
+              onUpdate(clientsEx![index]);
+            },
+            icon: const Icon(
+              Icons.edit,
+              color: Colors.blue,
+            ),
           ),
           IconButton(
-              onPressed: () async {
-                await onDeleteRow(clientsEx?[index].id ?? 0);
+              onPressed: () {
+                onDelete(clientsEx![index]);
               },
-              icon: const Icon(Icons.delete))
+              icon: const Icon(
+                Icons.delete,
+                color: Colors.red,
+              ))
         ],
       ))
     ]);
@@ -146,21 +217,4 @@ class MyDataTableSource extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
-  Future<void> onDeleteRow(int id) async {
-    try {
-      var sqlHelper = GetIt.I.get<SqlHelper>();
-      var result = await sqlHelper.db!.delete(
-        'clients',
-        where: 'id =?',
-        whereArgs: [id],
-      );
-      if (result > 0) {
-        getClients();
-      }
-    } catch (e) {
-      print('Error In Deleting Item');
-    }
-  }
 }
-
-

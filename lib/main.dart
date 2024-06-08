@@ -1,4 +1,3 @@
-
 import 'package:batch_sql/helpers/sqlHelper.dart';
 import 'package:batch_sql/pages/my_home.dart';
 import 'package:flutter/material.dart';
@@ -23,14 +22,15 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
-          backgroundColor:  Color(0xff0157db),
-          foregroundColor: Colors.white
-
+            backgroundColor: Color(0xff0157db), foregroundColor: Colors.white),
+        colorScheme: ColorScheme.fromSwatch(
+          errorColor: Colors.red,
+          cardColor: Colors.blue.shade100,
+          backgroundColor: Colors.white,
+          primarySwatch: getMaterialColor(const Color(0xff0157db)),
         ),
-          colorScheme: ColorScheme.fromSwatch(
-            backgroundColor: Colors.white,
-        primarySwatch: getMaterialColor(const Color(0xff0157db)),
-      )),
+        useMaterial3: true,
+      ),
       home: const HomePage(),
     );
   }

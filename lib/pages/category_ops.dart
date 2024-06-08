@@ -1,11 +1,13 @@
 import 'package:batch_sql/helpers/sqlHelper.dart';
+import 'package:batch_sql/models/category_data.dart';
 import 'package:batch_sql/widgets/add_elevated_button.dart';
 import 'package:batch_sql/widgets/my_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 class CategoryOpsPage extends StatefulWidget {
-  const CategoryOpsPage({super.key});
+  final CategoryData? categoryData;
+  const CategoryOpsPage({this.categoryData, super.key});
 
   @override
   State<CategoryOpsPage> createState() => _CategoryOpsPageState();
@@ -15,12 +17,19 @@ class _CategoryOpsPageState extends State<CategoryOpsPage> {
   var formKey = GlobalKey<FormState>();
   var nameController = TextEditingController();
   var descriptionController = TextEditingController();
+  @override
+  void initState() {
+    nameController = TextEditingController(text: widget.categoryData?.name);
+    descriptionController =
+        TextEditingController(text: widget.categoryData?.description);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New'),
+        title: Text(widget.categoryData != null ? 'Update' : 'Add New'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -70,10 +79,18 @@ class _CategoryOpsPageState extends State<CategoryOpsPage> {
     try {
       if (formKey.currentState!.validate()) {
         var sqlHelper = GetIt.I.get<SqlHelper>();
-        await sqlHelper.db!.insert('categories', {
-          'name': nameController.text,
-          'description': descriptionController.text,
-        });
+        if (widget.categoryData != null) {
+          await sqlHelper.db!.update('categories', {
+            'name': nameController.text,
+            'description': descriptionController.text
+          });
+        } else {
+          await sqlHelper.db!.insert('categories', {
+            'name': nameController.text,
+            'description': descriptionController.text,
+          });
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: Colors.green,
