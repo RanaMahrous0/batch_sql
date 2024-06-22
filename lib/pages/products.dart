@@ -79,7 +79,16 @@ class _MyProductPageState extends State<MyProductPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            const MySearchTextField(tableName: 'products'),
+            MySearchTextField(
+                onChanged: (value) async {
+                  var sqlHelper = GetIt.I.get<SqlHelper>();
+                  var result = await sqlHelper.db!.rawQuery("""
+        SELECT * FROM products
+        WHERE name LIKE '%$value%' OR description LIKE '%$value%, OR price LIKE '%$value%';
+          """);
+                  print('values:$result');
+                },
+                tableName: 'products'),
             const SizedBox(
               height: 15,
             ),

@@ -195,7 +195,7 @@ class _ProductOpsPageState extends State<ProductOpsPage> {
                 'isAvaliable': isAvaliable,
                 'categoryId': selectedCategoryId,
               },
-              where: 'id = ?');
+              where: 'id = ?' , whereArgs: []);
         } else {
           await sqlHelper.db!.insert('products', {
             'name': nameController.text,

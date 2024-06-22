@@ -1,4 +1,5 @@
 import 'package:batch_sql/helpers/sqlHelper.dart';
+import 'package:batch_sql/pages/all_sales.dart';
 import 'package:batch_sql/pages/catgories.dart';
 import 'package:batch_sql/pages/clients.dart';
 
@@ -110,7 +111,14 @@ class _HomePageState extends State<HomePage> {
                       icon: Icons.calculate,
                       color: Colors.orange,
                       label: 'All sales',
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AllSalesPage(),
+                          ),
+                        );
+                      },
                     ),
                     MyGirdViewItems(
                       icon: Icons.inventory,
@@ -170,6 +178,13 @@ class _HomePageState extends State<HomePage> {
             ),
           )
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          var sqlHelper = GetIt.I.get<SqlHelper>();
+          var results = await sqlHelper.db!.query('orders');
+          print(results);
+        },
       ),
     );
   }

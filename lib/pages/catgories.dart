@@ -74,7 +74,14 @@ class _MyCatgoryPageState extends State<MyCatgoryPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            const MySearchTextField(tableName: 'categories'),
+             MySearchTextField(onChanged:  (value) async {
+                var sqlHelper = GetIt.I.get<SqlHelper>();
+                var result = await sqlHelper.db!.rawQuery("""
+        SELECT * FROM categories
+        WHERE name LIKE '%$value%' OR description LIKE '%$value%';
+          """);
+                print('values:$result');
+              }, tableName: 'categories'),
             const SizedBox(
               height: 15,
             ),

@@ -4,20 +4,16 @@ import 'package:get_it/get_it.dart';
 
 class MySearchTextField extends StatelessWidget {
   final String tableName;
+  final void Function(String)? onChanged;
+  final TextEditingController? controller;
 
-  const MySearchTextField({required this.tableName ,super.key});
+  const MySearchTextField({required this.onChanged,this.controller,required this.tableName ,super.key});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-              onChanged: (value) async {
-                var sqlHelper = GetIt.I.get<SqlHelper>();
-                var result = await sqlHelper.db!.rawQuery("""
-        SELECT * FROM $tableName
-        WHERE name LIKE '%$value%' OR description LIKE '%$value%';
-          """);
-                print('values:$result');
-              },
+      controller: controller ,
+              onChanged:onChanged,
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Icons.search,

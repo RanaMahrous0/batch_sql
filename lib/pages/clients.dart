@@ -75,7 +75,16 @@ class _MyClientsPageState extends State<MyClientsPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            const MySearchTextField(tableName: 'clients'),
+            MySearchTextField(
+                onChanged: (value) async {
+                  var sqlHelper = GetIt.I.get<SqlHelper>();
+                  var result = await sqlHelper.db!.rawQuery("""
+        SELECT * FROM clients
+        WHERE name LIKE '%$value%';
+          """);
+                  print('values:$result');
+                },
+                tableName: 'clients'),
             const SizedBox(
               height: 15,
             ),
@@ -109,8 +118,6 @@ class _MyClientsPageState extends State<MyClientsPage> {
                       sortAscending = ascending;
                       sortColumnIndex = columnIndex;
 
-                    
-             
                       if (sortAscending == false) {
                         clients!.sort(
                           (a, b) => a.name!.compareTo(b.name!),
