@@ -5,9 +5,13 @@ class MyPaginatedDataTable extends StatelessWidget {
   final DataTableSource source;
   final List<DataColumn> columns;
   final double? minWidth;
+  final bool sortAscending;
+  final int sortColumnIndex;
   const MyPaginatedDataTable(
       {required this.source,
+      required this.sortColumnIndex,
       this.minWidth = 600,
+      required this.sortAscending,
       required this.columns,
       super.key});
 
@@ -15,6 +19,8 @@ class MyPaginatedDataTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: PaginatedDataTable2(
+        sortAscending: sortAscending,
+        sortColumnIndex: sortColumnIndex ,
         empty: const Center(
           child: Text('No Data Found'),
         ),

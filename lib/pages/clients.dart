@@ -1,5 +1,5 @@
 import 'package:batch_sql/helpers/sqlHelper.dart';
-import 'package:batch_sql/models/category_data.dart';
+
 import 'package:batch_sql/models/clients_data.dart';
 import 'package:batch_sql/pages/client_ops.dart';
 import 'package:batch_sql/widgets/my_paginated_data_table.dart';
@@ -17,6 +17,8 @@ class MyClientsPage extends StatefulWidget {
 
 class _MyClientsPageState extends State<MyClientsPage> {
   List<ClientsData>? clients;
+  bool sortAscending = true;
+  int sortColumnIndex = 0;
   @override
   void initState() {
     getClients();
@@ -78,6 +80,8 @@ class _MyClientsPageState extends State<MyClientsPage> {
               height: 15,
             ),
             MyPaginatedDataTable(
+                sortAscending: sortAscending,
+                sortColumnIndex: sortColumnIndex,
                 minWidth: 800,
                 source: ClientsDataSource(
                     clientsEx: clients,
@@ -95,12 +99,30 @@ class _MyClientsPageState extends State<MyClientsPage> {
                         getClients();
                       }
                     }),
-                columns: const [
+                columns: [
                   DataColumn(
                     label: Text('ID'),
                   ),
                   DataColumn(
                     label: Text('Name'),
+                    onSort: (columnIndex, ascending) {
+                      sortAscending = ascending;
+                      sortColumnIndex = columnIndex;
+
+                    
+             
+                      if (sortAscending == false) {
+                        clients!.sort(
+                          (a, b) => a.name!.compareTo(b.name!),
+                        );
+                      } else {
+                        clients!.sort(
+                          (a, b) => b.name!.compareTo(a.name!),
+                        );
+                      }
+
+                      setState(() {});
+                    },
                   ),
                   DataColumn(
                     label: Text('Email'),

@@ -15,6 +15,7 @@ class CategoryOpsPage extends StatefulWidget {
 
 class _CategoryOpsPageState extends State<CategoryOpsPage> {
   var formKey = GlobalKey<FormState>();
+
   var nameController = TextEditingController();
   var descriptionController = TextEditingController();
   @override
@@ -80,10 +81,15 @@ class _CategoryOpsPageState extends State<CategoryOpsPage> {
       if (formKey.currentState!.validate()) {
         var sqlHelper = GetIt.I.get<SqlHelper>();
         if (widget.categoryData != null) {
-          await sqlHelper.db!.update('categories', {
-            'name': nameController.text,
-            'description': descriptionController.text
-          });
+          await sqlHelper.db!.update(
+            'categories',
+            {
+              'name': nameController.text,
+              'description': descriptionController.text
+            },
+            where: 'id =?',
+            whereArgs: ['id'],
+          );
         } else {
           await sqlHelper.db!.insert('categories', {
             'name': nameController.text,

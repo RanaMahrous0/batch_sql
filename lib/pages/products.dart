@@ -16,6 +16,8 @@ class MyProductPage extends StatefulWidget {
 
 class _MyProductPageState extends State<MyProductPage> {
   List<ProductData>? products;
+  bool sortAscending = true;
+  int sortColumnIndex = 0;
   @override
   void initState() {
     getProducts();
@@ -82,6 +84,8 @@ class _MyProductPageState extends State<MyProductPage> {
               height: 15,
             ),
             MyPaginatedDataTable(
+                sortAscending: sortAscending,
+                sortColumnIndex: sortColumnIndex,
                 minWidth: 1300,
                 source: ProductsDataSource(
                     productsEx: products,
@@ -99,8 +103,9 @@ class _MyProductPageState extends State<MyProductPage> {
                         getProducts();
                       }
                     }),
-                columns: const [
+                columns: [
                   DataColumn(
+                    onSort: (columnIndex, ascending) {},
                     label: Text('ID'),
                   ),
                   DataColumn(
@@ -110,10 +115,40 @@ class _MyProductPageState extends State<MyProductPage> {
                     label: Text('Description'),
                   ),
                   DataColumn(
+                    numeric: true,
                     label: Text('Price'),
+                    onSort: (columnIndex, ascending) {
+                      sortColumnIndex = columnIndex;
+                      sortAscending = ascending;
+                      if (sortAscending == false) {
+                        products!.sort(
+                          (a, b) => a.price!.compareTo(b.price!),
+                        );
+                      } else {
+                        products!.sort(
+                          (a, b) => b.price!.compareTo(a.price!),
+                        );
+                      }
+                      setState(() {});
+                    },
                   ),
                   DataColumn(
+                    numeric: true,
                     label: Text('Stock'),
+                    onSort: (columnIndex, ascending) {
+                      sortColumnIndex = columnIndex;
+                      sortAscending = ascending;
+                      if (sortAscending == false) {
+                        products!.sort(
+                          (a, b) => a.stock!.compareTo(b.stock!),
+                        );
+                      } else {
+                        products!.sort(
+                          (a, b) => b.stock!.compareTo(a.stock!),
+                        );
+                      }
+                      setState(() {});
+                    },
                   ),
                   DataColumn(
                     label: Text('IsAvaliable'),

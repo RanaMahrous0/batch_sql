@@ -184,15 +184,18 @@ class _ProductOpsPageState extends State<ProductOpsPage> {
       if (formKey.currentState!.validate()) {
         var sqlHelper = GetIt.I.get<SqlHelper>();
         if (widget.productData != null) {
-          await sqlHelper.db!.update('products', {
-            'name': nameController.text,
-            'description': descriptionController.text,
-            'price': priceController.text,
-            'stock': stockController.text,
-            'image': imageController.text,
-            'isAvaliable': isAvaliable,
-            'categoryId': selectedCategoryId,
-          });
+          await sqlHelper.db!.update(
+              'products',
+              {
+                'name': nameController.text,
+                'description': descriptionController.text,
+                'price': priceController.text,
+                'stock': stockController.text,
+                'image': imageController.text,
+                'isAvaliable': isAvaliable,
+                'categoryId': selectedCategoryId,
+              },
+              where: 'id = ?');
         } else {
           await sqlHelper.db!.insert('products', {
             'name': nameController.text,

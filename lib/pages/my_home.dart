@@ -1,7 +1,9 @@
 import 'package:batch_sql/helpers/sqlHelper.dart';
 import 'package:batch_sql/pages/catgories.dart';
 import 'package:batch_sql/pages/clients.dart';
+
 import 'package:batch_sql/pages/products.dart';
+import 'package:batch_sql/pages/sale_ops.dart';
 import 'package:batch_sql/widgets/my_gird_view_items.dart';
 import 'package:batch_sql/widgets/my_header_items_home.dart';
 import 'package:flutter/foundation.dart';
@@ -140,7 +142,14 @@ class _HomePageState extends State<HomePage> {
                       icon: Icons.point_of_sale,
                       color: Colors.green,
                       label: 'New sale',
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SaleOpsPage(),
+                          ),
+                        );
+                      },
                     ),
                     MyGirdViewItems(
                       icon: Icons.category,

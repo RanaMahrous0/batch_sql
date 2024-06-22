@@ -56,12 +56,47 @@ class SqlHelper {
         address text
       )
     ''');
+      batch.execute('''
+      CREATE TABLE if not exists orders(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        label TEXT not null,
+        totalPrice real,
+        discount real,
+        clientId integer NOT NULL,
+        foreign key(clientId) references clients (id)
+        on delete restrict
+      )
+    ''');
+      batch.execute('''
+      CREATE TABLE if not exists orderProductItems(
+        orderId integer,
+        productId integer,
+        productCount integer,
+        foreign key(productId) references products (id)
+        on delete restrict
+      )
+    ''');
       var results = await batch.commit();
       print(' results : $results');
       return true;
     } catch (e) {
       print('error $e');
       return false;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> queryItems(
+      {String? price, int offset = 0, int limit = 10}) async {
+    if (price != null) {
+      return await db!.query(
+        'products',
+        where: 'price = ?',
+        whereArgs: [price],
+        limit: limit,
+        offset: offset,
+      );
+    } else {
+      return await db!.query('products', limit: limit, offset: offset);
     }
   }
 }

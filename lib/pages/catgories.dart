@@ -16,6 +16,8 @@ class MyCatgoryPage extends StatefulWidget {
 
 class _MyCatgoryPageState extends State<MyCatgoryPage> {
   List<CategoryData>? categories;
+  int sortColumnIndex = 0;
+  bool sortAscending = true;
   @override
   void initState() {
     getCategories();
@@ -77,6 +79,8 @@ class _MyCatgoryPageState extends State<MyCatgoryPage> {
               height: 15,
             ),
             MyPaginatedDataTable(
+                sortAscending: sortAscending,
+                sortColumnIndex: sortColumnIndex,
                 source: CategoriesDataSource(
                     categoriesEx: categories,
                     onDelete: (categoryData) {
@@ -93,17 +97,31 @@ class _MyCatgoryPageState extends State<MyCatgoryPage> {
                         getCategories();
                       }
                     }),
-                columns: const [
-                  DataColumn(
+                columns: [
+                  const DataColumn(
                     label: Text('ID'),
                   ),
                   DataColumn(
-                    label: Text('Name'),
+                    onSort: (columnIndex, ascending) {
+                      sortColumnIndex = columnIndex;
+                      sortAscending = ascending;
+                      if (sortAscending == false) {
+                        categories!.sort(
+                          (a, b) => a.name!.compareTo(b.name!),
+                        );
+                      } else {
+                        categories!.sort(
+                          (a, b) => b.name!.compareTo(a.name!),
+                        );
+                      }
+                      setState(() {});
+                    },
+                    label: const Text('Name'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Text('Description'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Center(
                       child: Text('Actions'),
                     ),
