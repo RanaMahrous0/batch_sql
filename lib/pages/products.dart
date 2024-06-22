@@ -106,17 +106,17 @@ class _MyProductPageState extends State<MyProductPage> {
                 columns: [
                   DataColumn(
                     onSort: (columnIndex, ascending) {},
-                    label: Text('ID'),
+                    label: const Text('ID'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Text('Name'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Text('Description'),
                   ),
                   DataColumn(
                     numeric: true,
-                    label: Text('Price'),
+                    label: const Text('Price'),
                     onSort: (columnIndex, ascending) {
                       sortColumnIndex = columnIndex;
                       sortAscending = ascending;
@@ -134,7 +134,7 @@ class _MyProductPageState extends State<MyProductPage> {
                   ),
                   DataColumn(
                     numeric: true,
-                    label: Text('Stock'),
+                    label: const Text('Stock'),
                     onSort: (columnIndex, ascending) {
                       sortColumnIndex = columnIndex;
                       sortAscending = ascending;
@@ -150,22 +150,22 @@ class _MyProductPageState extends State<MyProductPage> {
                       setState(() {});
                     },
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Text('IsAvaliable'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Text('Image'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Text('CategoryId'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Text('CategoryName'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Text('CategoryDescription'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Center(
                       child: Text('Actions'),
                     ),

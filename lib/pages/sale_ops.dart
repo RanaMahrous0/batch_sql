@@ -6,7 +6,7 @@ import 'package:batch_sql/widgets/add_elevated_button.dart';
 import 'package:batch_sql/widgets/clients_drop_down_menu.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:get_it/get_it.dart';
 
 class SaleOpsPage extends StatefulWidget {
@@ -108,7 +108,7 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
                               onPressed: () {
                                 onAddProduct();
                               },
-                              icon: Icon(Icons.add)),
+                              icon: const Icon(Icons.add)),
                           const SizedBox(
                             width: 5,
                           ),
@@ -139,13 +139,13 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
                   child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: (products?.isEmpty ?? false)
-                    ? Center(
+                    ? const Center(
                         child: Text('No Data Found'),
                       )
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Products',
                             style: TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 17),
@@ -193,7 +193,8 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
                                                               () {},
                                                             );
                                                           },
-                                                    icon: Icon(Icons.remove)),
+                                                    icon: const Icon(
+                                                        Icons.remove)),
                                                 Text(getOrderItem(product.id!)!
                                                     .productCount
                                                     .toString()),
@@ -217,25 +218,26 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
                                                         () {},
                                                       );
                                                     },
-                                                    icon: Icon(Icons.add)),
+                                                    icon:
+                                                        const Icon(Icons.add)),
                                               ],
                                             ),
-                                      trailing:
-                                          getOrderItem(product.id!) == null
-                                              ? IconButton(
-                                                  onPressed: () {
-                                                    onAddItem(product);
-                                                    setStateEx(() {});
-                                                  },
-                                                  icon: Icon(Icons.add))
-                                              : IconButton(
-                                                  onPressed: () {
-                                                    onDeleteItem(product.id!);
-                                                    setStateEx(
-                                                      () {},
-                                                    );
-                                                  },
-                                                  icon: Icon(Icons.delete)),
+                                      trailing: getOrderItem(product.id!) ==
+                                              null
+                                          ? IconButton(
+                                              onPressed: () {
+                                                onAddItem(product);
+                                                setStateEx(() {});
+                                              },
+                                              icon: Icon(Icons.add))
+                                          : IconButton(
+                                              onPressed: () {
+                                                onDeleteItem(product.id!);
+                                                setStateEx(
+                                                  () {},
+                                                );
+                                              },
+                                              icon: const Icon(Icons.delete)),
                                     ),
                                   )
                               ],

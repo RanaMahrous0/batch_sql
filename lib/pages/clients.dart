@@ -100,11 +100,11 @@ class _MyClientsPageState extends State<MyClientsPage> {
                       }
                     }),
                 columns: [
-                  DataColumn(
+                  const DataColumn(
                     label: Text('ID'),
                   ),
                   DataColumn(
-                    label: Text('Name'),
+                    label: const Text('Name'),
                     onSort: (columnIndex, ascending) {
                       sortAscending = ascending;
                       sortColumnIndex = columnIndex;
@@ -124,16 +124,16 @@ class _MyClientsPageState extends State<MyClientsPage> {
                       setState(() {});
                     },
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Text('Email'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Text('Phone'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Text('Address'),
                   ),
-                  DataColumn(
+                  const DataColumn(
                     label: Center(
                       child: Text('Actions'),
                     ),
