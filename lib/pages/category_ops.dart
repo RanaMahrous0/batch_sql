@@ -64,7 +64,7 @@ class _CategoryOpsPageState extends State<CategoryOpsPage> {
                 const SizedBox(
                   height: 20,
                 ),
-                MyAddElevatedButton(
+                MyAppElevatedButton(
                   label: 'Submit',
                   onPressed: () {
                     onSubmit();
