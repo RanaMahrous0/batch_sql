@@ -4,6 +4,7 @@ import 'package:batch_sql/pages/product_ops.dart';
 import 'package:batch_sql/widgets/my_paginated_data_table.dart';
 import 'package:batch_sql/widgets/my_search_text_field.dart';
 import 'package:data_table_2/data_table_2.dart';
+import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -18,6 +19,9 @@ class _MyProductPageState extends State<MyProductPage> {
   List<ProductData>? products;
   bool sortAscending = true;
   int sortColumnIndex = 0;
+  List<ProductData>? selectedListData = [];
+  List<ProductData>? filteredList = [];
+  var searchController = TextEditingController();
   @override
   void initState() {
     getProducts();
@@ -38,6 +42,7 @@ class _MyProductPageState extends State<MyProductPage> {
         products = [];
         for (var item in data) {
           products!.add(ProductData.fromJson(item));
+          filteredList = products;
         }
       } else {
         products = [];
@@ -51,6 +56,29 @@ class _MyProductPageState extends State<MyProductPage> {
       );
     }
     setState(() {});
+  }
+
+  void openFilterDialog() async {
+    await FilterListDialog.display<ProductData>(
+      context,
+      listData: products!,
+      selectedListData: selectedListData,
+      choiceChipLabel: (product) => product!.price.toString(),
+      validateSelectedItem: (list, val) => list!.contains(val),
+      onItemSearch: (product, query) {
+        return product.name!
+            .toString()
+            .toLowerCase()
+            .contains(query.toLowerCase());
+      },
+      onApplyButtonClick: (list) {
+        setState(() {
+          selectedListData = List.from(list!);
+          filteredList = [];
+        });
+        Navigator.pop(context);
+      },
+    );
   }
 
   @override
@@ -79,16 +107,28 @@ class _MyProductPageState extends State<MyProductPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            MySearchTextField(
-                onChanged: (value) async {
-                  var sqlHelper = GetIt.I.get<SqlHelper>();
-                  var result = await sqlHelper.db!.rawQuery("""
-        SELECT * FROM products
-        WHERE name LIKE '%$value%' OR description LIKE '%$value%, OR price LIKE '%$value%';
-          """);
-                  print('values:$result');
-                },
-                tableName: 'products'),
+            Row(
+              children: [
+                Expanded(
+                  child: MySearchTextField(
+                    onChanged: (value) {
+                      setState(() {
+                        onSearch(value);
+                      });
+                    },
+                    controller: searchController,
+                  ),
+                ),
+                IconButton(
+                    onPressed: () {
+                      openFilterDialog();
+                    },
+                    icon: Icon(
+                      Icons.filter_list,
+                      color: Theme.of(context).primaryColor,
+                    ))
+              ],
+            ),
             const SizedBox(
               height: 15,
             ),
@@ -97,7 +137,9 @@ class _MyProductPageState extends State<MyProductPage> {
                 sortColumnIndex: sortColumnIndex,
                 minWidth: 1300,
                 source: ProductsDataSource(
-                    productsEx: products,
+                    productsEx: selectedListData!.isEmpty
+                        ? filteredList
+                        : selectedListData! + filteredList!,
                     onDelete: (productData) {
                       onDeleteRow(productData.id!);
                     },
@@ -224,6 +266,24 @@ class _MyProductPageState extends State<MyProductPage> {
       }
     } catch (e) {
       print('Error In Deleting Item');
+    }
+  }
+
+  void onSearch(value) {
+    if (value.isEmpty) {
+      filteredList = products;
+    } else {
+      filteredList = [];
+      for (var product in products!) {
+        if (product.name!.toLowerCase().contains(value.toLowerCase()) ||
+            product.price
+                .toString()
+                .toLowerCase()
+                .contains(value.toLowerCase())) {
+          filteredList!.add(product);
+          selectedListData = [];
+        }
+      }
     }
   }
 }

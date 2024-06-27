@@ -1,4 +1,6 @@
 import 'package:batch_sql/helpers/sqlHelper.dart';
+import 'package:batch_sql/models/exchange_rate.dart';
+import 'package:batch_sql/models/order_data.dart';
 import 'package:batch_sql/pages/all_sales.dart';
 import 'package:batch_sql/pages/catgories.dart';
 import 'package:batch_sql/pages/clients.dart';
@@ -22,18 +24,100 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool isLoading = true;
   bool isTableCreated = false;
+  List<ExchangeRate>? exchangeRate;
+  List<OrderData>? orders;
+  double total = 0;
 
   @override
   void initState() {
     createTables();
+    getExhangeRate();
+    getOrders();
+
+    // initPage();
     super.initState();
   }
+
+  // void initPage() async {
+  //   calculateTotalPrice;
+
+  //   await getExhangeRate();
+  // }
 
   void createTables() async {
     var sqlhelper = GetIt.I.get<SqlHelper>();
     isTableCreated = await sqlhelper.createTable();
     isLoading = false;
+
     setState(() {});
+  }
+
+  void getExhangeRate() async {
+    try {
+      var sqlHelper = GetIt.I.get<SqlHelper>();
+      var data = await sqlHelper.db!.query('exchangeRate');
+
+      if (data.isNotEmpty) {
+        exchangeRate = [];
+        for (var item in data) {
+          exchangeRate!.add(ExchangeRate.fromJson(item));
+        }
+      } else {
+        exchangeRate = [];
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Error In Get Data $e '),
+        ),
+      );
+    }
+    setState(() {});
+  }
+
+  Future<void> getOrders() async {
+    try {
+      var sqlHelper = GetIt.I.get<SqlHelper>();
+      var data = await sqlHelper.db!.rawQuery("""
+      select O.* ,C.name as clientName,C.phone as clientPhone, C.address as clientAddress
+      from orders O
+      inner join clients C
+      where O.clientId = C.id
+      """);
+
+      if (data.isNotEmpty) {
+        orders = [];
+        total = 0;
+        setState(() {
+          orders = data.map((item) => OrderData.fromJson(item)).toList();
+          total = calculateTodaySales();
+        });
+      } else {
+        setState(() {
+          orders = [];
+          total = 0;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Error In Get Data $e '),
+        ),
+      );
+    }
+    setState(() {});
+  }
+
+  double calculateTodaySales() {
+    double calculatedTotal = 0;
+    if (orders != null) {
+      for (var order in orders!) {
+        calculatedTotal += (order.totalPrice ?? 0);
+      }
+    }
+    return calculatedTotal;
   }
 
   @override
@@ -85,16 +169,17 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ],
                         ),
-                        const MyHeaderItem(
-                            label: 'Exchange rate',
-                            value: '1 EUR = 11,712.25 UZS'),
-                        const MyHeaderItem(
-                            label: 'Today \'s sales', value: '110,000.00 UZS')
+                        MyHeaderItem(
+                          label: 'Exchange rate',
+                          value:
+                              '${(exchangeRate?.first.label) ?? 0} ERU = ${(exchangeRate?.first.value) ?? 0}',
+                        ),
+                        MyHeaderItem(label: 'Today \'s sales', value: '$total')
                       ],
                     ),
                   ),
                 ),
-              ),
+              )
             ],
           ),
           Expanded(
@@ -150,13 +235,14 @@ class _HomePageState extends State<HomePage> {
                       icon: Icons.point_of_sale,
                       color: Colors.green,
                       label: 'New sale',
-                      onTap: () {
+                      onTap: () async {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const SaleOpsPage(),
                           ),
                         );
+                        await getOrders();
                       },
                     ),
                     MyGirdViewItems(
@@ -182,8 +268,13 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           var sqlHelper = GetIt.I.get<SqlHelper>();
+          sqlHelper.db!.insert('exchangeRate', {'label': 1, 'value': 11712.25});
+          sqlHelper.db!.insert('exchangeRate', {'label': 1, 'value': 11712.25});
+
           var results = await sqlHelper.db!.query('orders');
+          var resultsex = await sqlHelper.db!.query('exchangeRate');
           print(results);
+          print(resultsex);
         },
       ),
     );

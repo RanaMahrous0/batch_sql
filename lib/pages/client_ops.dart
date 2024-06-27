@@ -117,12 +117,16 @@ class _ClientOpsPageState extends State<ClientOpsPage> {
       if (formkey.currentState!.validate()) {
         var sqlHelper = GetIt.I.get<SqlHelper>();
         if (widget.clientsData != null) {
-          await sqlHelper.db!.update('clients', {
-            'name': nameController.text,
-            'email': emailController.text,
-            'phone': phoneController.text,
-            'address': addressController.text,
-          });
+          await sqlHelper.db!.update(
+              'clients',
+              {
+                'name': nameController.text,
+                'email': emailController.text,
+                'phone': phoneController.text,
+                'address': addressController.text,
+              },
+              where: 'id =?',
+              whereArgs: [widget.clientsData?.id]);
         } else {
           await sqlHelper.db!.insert('clients', {
             'name': nameController.text,

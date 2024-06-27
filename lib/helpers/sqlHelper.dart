@@ -76,8 +76,18 @@ class SqlHelper {
         on delete restrict
       )
     ''');
+      batch.execute('''
+      CREATE TABLE if not exists exchangeRate(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        label integer ,
+        value real 
+
+      )
+    ''');
       var results = await batch.commit();
+      db!.insert('exchangeRate', {'label': 1, 'value': 11712.25});
       print(' results : $results');
+
       return true;
     } catch (e) {
       print('error $e');
@@ -99,4 +109,5 @@ class SqlHelper {
       return await db!.query('products', limit: limit, offset: offset);
     }
   }
+ 
 }

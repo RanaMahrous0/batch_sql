@@ -7,7 +7,12 @@ class OrderItemData {
   ProductData? product;
 
   OrderItemData(
-      {this.orderId, this.productId, this.productCount, this.product});
+      {this.orderId, this.productId, this.productCount, this.product})  ;
+
+  int get orId => orderId!;
+  int get proId => orderId!;
+  int get count => productCount!;
+  ProductData get pro => product!;
 
   OrderItemData.fromJson(Map<String, dynamic> data) {
     orderId = data['orderId'];

@@ -2,10 +2,10 @@ import 'package:batch_sql/helpers/sqlHelper.dart';
 import 'package:batch_sql/models/order_data.dart';
 import 'package:batch_sql/models/order_item_data.dart';
 import 'package:batch_sql/models/product_data.dart';
+import 'package:batch_sql/pages/all_sales.dart';
 import 'package:batch_sql/widgets/add_elevated_button.dart';
 import 'package:batch_sql/widgets/clients_drop_down_menu.dart';
 import 'package:batch_sql/widgets/my_search_text_field.dart';
-import 'package:batch_sql/widgets/my_text_form_field.dart';
 
 import 'package:flutter/material.dart';
 
@@ -27,6 +27,8 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
   List<OrderItemData> selectedOrderItem = [];
   TextEditingController? controller;
   var discountController = TextEditingController();
+  List<ProductData>? filteredList = [];
+
   @override
   void initState() {
     initPage();
@@ -47,6 +49,7 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
         products = [];
         for (var item in data) {
           products!.add(ProductData.fromJson(item));
+          filteredList = products;
         }
       } else {
         products = [];
@@ -193,6 +196,11 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
                   label: 'Add Order',
                   onPressed: () async {
                     await onAddOrder();
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => AllSalesPage(
+                    //             orderItemsData: selectedOrderItem)));
                   })
             ],
           ),
@@ -216,7 +224,7 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
         batch.insert('orderProductItems', {
           'orderId': orderId,
           'productId': orderItem.productId,
-          'productCount': orderItem.productCount
+          'productCount': orderItem.productCount,
         });
       }
       await batch.commit();
@@ -227,6 +235,7 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
           content: Text('Data Saved Successfully'),
         ),
       );
+
       Navigator.pop(context, true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -278,15 +287,11 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
                             height: 20,
                           ),
                           MySearchTextField(
-                            onChanged: (value) async {
-                              var sqlHelper = GetIt.I.get<SqlHelper>();
-                              var result = await sqlHelper.db!.rawQuery("""
-        SELECT * FROM products
-        WHERE name LIKE '%$value%' OR description LIKE '%$value%, OR price LIKE '%$value%';
-          """);
-                              print('values:$result');
+                            onChanged: (value) {
+                              setStateEx(() {
+                                onSearch(value);
+                              });
                             },
-                            tableName: 'products',
                             controller: controller,
                           ),
                           const SizedBox(
@@ -295,7 +300,7 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
                           Expanded(
                             child: ListView(
                               children: [
-                                for (var product in products!)
+                                for (var product in filteredList!)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 8.0),
@@ -397,6 +402,23 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
           );
         });
     setState(() {});
+  }
+
+  void onSearch(value) {
+    if (value.isEmpty) {
+      filteredList = products;
+    } else {
+      filteredList = [];
+      for (var product in products!) {
+        if (product.name!.toLowerCase().contains(value.toLowerCase()) ||
+            product.price
+                .toString()
+                .toLowerCase()
+                .contains(value.toLowerCase())) {
+          filteredList!.add(product);
+        }
+      }
+    }
   }
 
   OrderItemData? getOrderItem(int productId) {

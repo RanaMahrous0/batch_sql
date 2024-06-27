@@ -67,6 +67,7 @@ class _CategoryOpsPageState extends State<CategoryOpsPage> {
                 MyAppElevatedButton(
                   label: 'Submit',
                   onPressed: () {
+                   
                     onSubmit();
                   },
                 )
@@ -77,10 +78,12 @@ class _CategoryOpsPageState extends State<CategoryOpsPage> {
   }
 
   Future<void> onSubmit() async {
+    
     try {
       if (formKey.currentState!.validate()) {
         var sqlHelper = GetIt.I.get<SqlHelper>();
         if (widget.categoryData != null) {
+       
           await sqlHelper.db!.update(
             'categories',
             {
@@ -88,7 +91,7 @@ class _CategoryOpsPageState extends State<CategoryOpsPage> {
               'description': descriptionController.text
             },
             where: 'id =?',
-            whereArgs: ['id'],
+            whereArgs: [widget.categoryData?.id],
           );
         } else {
           await sqlHelper.db!.insert('categories', {

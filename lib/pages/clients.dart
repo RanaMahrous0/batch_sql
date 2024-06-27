@@ -5,6 +5,7 @@ import 'package:batch_sql/pages/client_ops.dart';
 import 'package:batch_sql/widgets/my_paginated_data_table.dart';
 import 'package:batch_sql/widgets/my_search_text_field.dart';
 import 'package:data_table_2/data_table_2.dart';
+import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -17,8 +18,11 @@ class MyClientsPage extends StatefulWidget {
 
 class _MyClientsPageState extends State<MyClientsPage> {
   List<ClientsData>? clients;
+  List<ClientsData>? filteredList = [];
   bool sortAscending = true;
   int sortColumnIndex = 0;
+  var searchController = TextEditingController();
+  List<ClientsData>? selectedListData = [];
   @override
   void initState() {
     getClients();
@@ -34,6 +38,7 @@ class _MyClientsPageState extends State<MyClientsPage> {
         clients = [];
         for (var item in data) {
           clients!.add(ClientsData.fromJson(item));
+          filteredList = clients;
         }
       } else {
         clients = [];
@@ -47,6 +52,26 @@ class _MyClientsPageState extends State<MyClientsPage> {
       );
     }
     setState(() {});
+  }
+
+  void openFilterDialog() async {
+    await FilterListDialog.display<ClientsData>(
+      context,
+      listData: clients!,
+      selectedListData: selectedListData,
+      choiceChipLabel: (user) => user!.name,
+      validateSelectedItem: (list, val) => list!.contains(val),
+      onItemSearch: (client, query) {
+        return client.name!.toLowerCase().contains(query.toLowerCase());
+      },
+      onApplyButtonClick: (list) {
+        setState(() {
+          selectedListData = List.from(list!);
+          filteredList = [];
+        });
+        Navigator.pop(context);
+      },
+    );
   }
 
   @override
@@ -75,16 +100,28 @@ class _MyClientsPageState extends State<MyClientsPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            MySearchTextField(
-                onChanged: (value) async {
-                  var sqlHelper = GetIt.I.get<SqlHelper>();
-                  var result = await sqlHelper.db!.rawQuery("""
-        SELECT * FROM clients
-        WHERE name LIKE '%$value%';
-          """);
-                  print('values:$result');
-                },
-                tableName: 'clients'),
+            Row(
+              children: [
+                Expanded(
+                  child: MySearchTextField(
+                    onChanged: (value) {
+                      setState(() {
+                        onSearch(value);
+                      });
+                    },
+                    controller: searchController,
+                  ),
+                ),
+                IconButton(
+                    onPressed: () {
+                      openFilterDialog();
+                    },
+                    icon: Icon(
+                      Icons.filter_list,
+                      color: Theme.of(context).primaryColor,
+                    ))
+              ],
+            ),
             const SizedBox(
               height: 15,
             ),
@@ -93,16 +130,18 @@ class _MyClientsPageState extends State<MyClientsPage> {
                 sortColumnIndex: sortColumnIndex,
                 minWidth: 800,
                 source: ClientsDataSource(
-                    clientsEx: clients,
+                    clientsEx: selectedListData!.isEmpty
+                        ? filteredList
+                        : selectedListData! + filteredList!,
                     onDelete: (clientData) {
                       onDeleteRow(clientData.id!);
                     },
-                    onUpdate: (categoryData) async {
+                    onUpdate: (clientData) async {
                       var result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => ClientOpsPage(
-                                    clientsData: categoryData,
+                                    clientsData: clientData,
                                   )));
                       if (result ?? false) {
                         getClients();
@@ -190,6 +229,20 @@ class _MyClientsPageState extends State<MyClientsPage> {
       }
     } catch (e) {
       print('Error In Deleting Item');
+    }
+  }
+
+  void onSearch(value) {
+    if (value.isEmpty) {
+      filteredList = clients;
+    } else {
+      filteredList = [];
+      for (var client in clients!) {
+        if (client.name!.toLowerCase().contains(value.toLowerCase())) {
+          filteredList!.add(client);
+          selectedListData = [];
+        }
+      }
     }
   }
 }

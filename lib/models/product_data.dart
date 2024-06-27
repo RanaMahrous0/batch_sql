@@ -9,18 +9,28 @@ class ProductData {
   int? categoryId;
   String? categoryName;
   String? categoryDescription;
+  String? label; // New field to indicate moreThan20 or lessThan20
+  ProductData(
+      {this.id,
+      this.name,
+      this.price,
+      this.image,
+      this.stock,
+      this.categoryName,
+      this.categoryDescription,
+      this.label});
 
   ProductData.fromJson(Map<String, dynamic> data) {
-    id = data['id'];
-    name = data['name'];
-    description = data['description'];
-    price = data['price'];
-    stock = data['stock'];
+    id = data['id'] as int?;
+    name = data['name'] as String?;
+    description = data['description'] as String?;
+    price = data['price'] as double?;
+    stock = data['stock'] as int?;
     isAvaliable = data['isAvaliable'] == 1 ? true : false;
-    image = data['image'];
-    categoryId = data['categoryId'];
-    categoryName = data['categoryName'];
-    categoryDescription = data['categoryDescription'];
+    image = data['image'] as String?;
+    categoryId = data['categoryId'] as int?;
+    categoryName = data['categoryName'] as String?;
+    categoryDescription = data['categoryDescription'] as String?;
   }
   Map<String, dynamic> toJson() {
     return {
