@@ -265,18 +265,6 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          var sqlHelper = GetIt.I.get<SqlHelper>();
-          sqlHelper.db!.insert('exchangeRate', {'label': 1, 'value': 11712.25});
-          sqlHelper.db!.insert('exchangeRate', {'label': 1, 'value': 11712.25});
-
-          var results = await sqlHelper.db!.query('orders');
-          var resultsex = await sqlHelper.db!.query('exchangeRate');
-          print(results);
-          print(resultsex);
-        },
-      ),
     );
   }
 }

@@ -92,8 +92,6 @@ class _AllSalesPageState extends State<AllSalesPage> {
       } else {
         orderItems = [];
       }
-      var printD = await sqlHelper.db!.query('orderProductItems');
-      print(printD);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
