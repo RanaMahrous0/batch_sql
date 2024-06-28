@@ -2,7 +2,7 @@ import 'package:batch_sql/helpers/sqlHelper.dart';
 import 'package:batch_sql/models/order_data.dart';
 import 'package:batch_sql/models/order_item_data.dart';
 import 'package:batch_sql/models/product_data.dart';
-import 'package:batch_sql/pages/all_sales.dart';
+
 import 'package:batch_sql/widgets/add_elevated_button.dart';
 import 'package:batch_sql/widgets/clients_drop_down_menu.dart';
 import 'package:batch_sql/widgets/my_search_text_field.dart';
@@ -196,11 +196,6 @@ class _SaleOpsPageState extends State<SaleOpsPage> {
                   label: 'Add Order',
                   onPressed: () async {
                     await onAddOrder();
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => AllSalesPage(
-                    //             orderItemsData: selectedOrderItem)));
                   })
             ],
           ),

@@ -5,6 +5,7 @@ import 'package:batch_sql/models/product_data.dart';
 import 'package:batch_sql/widgets/my_paginated_data_table.dart';
 import 'package:batch_sql/widgets/my_search_text_field.dart';
 import 'package:data_table_2/data_table_2.dart';
+import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -23,6 +24,8 @@ class _AllSalesPageState extends State<AllSalesPage> {
   int sortColumnIndex = 0;
   List<ProductData>? products;
   List<OrderItemData> selectedOrderItem = [];
+  List<OrderData>? selectedListData = [];
+  List<OrderData>? filteredList = [];
 
   @override
   void initState() {
@@ -46,8 +49,8 @@ class _AllSalesPageState extends State<AllSalesPage> {
         orders = [];
         for (var item in data) {
           orders!.add(OrderData.fromJson(item));
+          filteredList = orders;
         }
-        print(orders);
       } else {
         orders = [];
       }
@@ -132,6 +135,26 @@ class _AllSalesPageState extends State<AllSalesPage> {
     setState(() {});
   }
 
+  void openFilterDialog() async {
+    await FilterListDialog.display<OrderData>(
+      context,
+      listData: orders!,
+      selectedListData: selectedListData,
+      choiceChipLabel: (order) => order!.clientName,
+      validateSelectedItem: (list, val) => list!.contains(val),
+      onItemSearch: (order, query) {
+        return order.clientName!.toLowerCase().contains(query.toLowerCase());
+      },
+      onApplyButtonClick: (list) {
+        setState(() {
+          selectedListData = List.from(list!);
+          filteredList = [];
+        });
+        Navigator.pop(context);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,15 +168,26 @@ class _AllSalesPageState extends State<AllSalesPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            MySearchTextField(
-              onChanged: (value) async {
-                var sqlHelper = GetIt.I.get<SqlHelper>();
-                var result = await sqlHelper.db!.rawQuery("""
-        SELECT * FROM orders
-        WHERE label LIKE '%$value%';
-          """);
-                print('values:$result');
-              },
+            Row(
+              children: [
+                Expanded(
+                  child: MySearchTextField(
+                    onChanged: (value) {
+                      setState(() {
+                        onSearch(value);
+                      });
+                    },
+                  ),
+                ),
+                IconButton(
+                    onPressed: () {
+                      openFilterDialog();
+                    },
+                    icon: Icon(
+                      Icons.filter_list,
+                      color: Theme.of(context).primaryColor,
+                    ))
+              ],
             ),
             const SizedBox(
               height: 15,
@@ -163,7 +197,9 @@ class _AllSalesPageState extends State<AllSalesPage> {
                 sortColumnIndex: sortColumnIndex,
                 minWidth: 1300,
                 source: OrderDataSource(
-                    orderEx: orders,
+                    orderEx: selectedListData!.isEmpty
+                        ? filteredList
+                        : selectedListData! + filteredList!,
                     onDelete: (orderData) async {
                       await onDeleteRow(orderData.id!);
                     },
@@ -307,6 +343,20 @@ class _AllSalesPageState extends State<AllSalesPage> {
       }
     } catch (e) {
       print('Error In Deleting Item');
+    }
+  }
+
+  void onSearch(value) {
+    if (value.isEmpty) {
+      filteredList = orders;
+    } else {
+      filteredList = [];
+      for (var order in orders!) {
+        if (order.clientName!.toLowerCase().contains(value.toLowerCase())) {
+          filteredList!.add(order);
+          selectedListData = [];
+        }
+      }
     }
   }
 }

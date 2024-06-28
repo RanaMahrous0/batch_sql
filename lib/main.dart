@@ -9,10 +9,8 @@ void main() async {
   await sqlhelper.initDatabase();
   if (sqlhelper.db != null) {
     GetIt.I.registerSingleton<SqlHelper>(sqlhelper);
-    
   }
-  // sqlhelper=GetIt.I.get<SqlHelper>();
-  //  sqlhelper.db!.insert('exchangeRate', {'label': 1, 'value': 11712.25});
+
   runApp(const MyApp());
 }
 
